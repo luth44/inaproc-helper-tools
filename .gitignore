@@ -1,0 +1,28 @@
+# Sistem Operasi
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Log & Debugging (seperti hasil export console)
+*.log
+npm-debug.log*
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# File Lingkungan & Rahasia (jaga-jaga jika ada file config lokal)
+.env
+.env.*
+config.local.js
+secrets.json
+
+# Paket Build / Arsip Ekstensi
+*.zip
+*.crx
+*.pem
+
+# Node.js (jika suatu saat memakai npm)
+node_modules/
