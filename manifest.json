@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "INAPROC Catalog Helper & AI Auto-Fill",
+  "version": "1.5.2",
+  "description": "Kalkulator Exclude PPN, Reference Grabber, Auto Toggle Varian, dan AI Auto-Fill untuk Katalog INAPROC.",
+  "permissions": [
+    "sidePanel",
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.inaproc.id/*",
+    "https://generativelanguage.googleapis.com/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_title": "Buka INAPROC Helper"
+  },
+  "commands": {
+    "toggle-varian": {
+      "suggested_key": {
+        "default": "Alt+V"
+      },
+      "description": "Auto OFF Varian ke-2 dst di INAPROC"
+    }
+  }
+}

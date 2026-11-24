@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>INAPROC Helper</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 12px;
+      background-color: #f8fafc;
+      color: #1e293b;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 13px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+    h3 {
+      margin: 0 0 10px 0;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 7px;
+    }
+    .badge-hint {
+      font-size: 10px;
+      font-weight: 600;
+      background: #eff6ff;
+      color: #2563eb;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .badge-amber {
+      background: #fef3c7;
+      color: #b45309;
+    }
+    .grid-container {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+    .form-group {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 8px;
+    }
+    .grid-container .form-group { margin-bottom: 0; }
+    label {
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #475569;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    input[type="text"], input[type="password"], select {
+      width: 100%;
+      padding: 7px 10px;
+      font-size: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      outline: none;
+      background-color: #ffffff;
+      color: #1e293b;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus, input[type="password"]:focus, select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    }
+    .output-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    input#excludeInput {
+      background-color: #e2e8f0;
+      color: #334155;
+      font-weight: 700;
+      cursor: not-allowed;
+      user-select: none;
+    }
+    button#copyBtn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      height: 33px;
+      min-width: 33px;
+      flex-shrink: 0;
+    }
+    button#copyBtn:hover { background-color: #1d4ed8; }
+    button#copyBtn.copied { background-color: #16a34a; }
+
+    .status-text {
+      font-size: 11px;
+      margin-top: 5px;
+      min-height: 14px;
+      font-weight: 500;
+    }
+    .text-success { color: #16a34a; text-align: right; }
+    .text-error { color: #dc2626; }
+
+    .btn-primary {
+      width: 100%;
+      padding: 9px 12px;
+      background-color: #0f172a;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background-color 0.2s;
+    }
+    .btn-primary:hover { background-color: #1e293b; }
+    .btn-primary:disabled { background-color: #94a3b8; cursor: wait; }
+
+    .btn-amber { background-color: #d97706; }
+    .btn-amber:hover { background-color: #b45309; }
+
+    .btn-blue { background-color: #2563eb; margin-top: 8px; }
+    .btn-blue:hover { background-color: #1d4ed8; }
+
+    .btn-purple { background-color: #7e22ce; }
+    .btn-purple:hover { background-color: #6b21a8; }
+
+    .btn-green { background-color: #16a34a; margin-top: 8px; }
+    .btn-green:hover { background-color: #15803d; }
+
+    .btn-clear {
+      width: 100%;
+      padding: 8px 12px;
+      margin-top: 8px;
+      background-color: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-clear:hover { background-color: #e2e8f0; color: #0f172a; }
+
+    .btn-sm {
+      padding: 6px 10px;
+      font-size: 11px;
+      background: #e2e8f0;
+      color: #1e293b;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .btn-sm:hover { background: #cbd5e1; }
+    .btn-sm-blue { background: #dbeafe; color: #1d4ed8; }
+    .btn-sm-blue:hover { background: #bfdbfe; }
+
+    .settings-panel {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      display: none;
+      flex-direction: column;
+    }
+    .btn-row { display: flex; gap: 6px; margin-top: 4px; }
+    .btn-row button { flex: 1; }
+
+    .link-toggle {
+      font-size: 10px;
+      color: #7e22ce;
+      cursor: pointer;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+    .provider-pill {
+      font-size: 10px;
+      font-weight: 600;
+      background: #f3e8ff;
+      color: #7e22ce;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+    .desc-text {
+      font-size: 11px;
+      color: #64748b;
+      margin: 0 0 10px 0;
+      line-height: 1.4;
+    }
+    .alert-box {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      display: none;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .alert-box.ok {
+      display: block;
+      background-color: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+    .alert-box.err {
+      display: block;
+      background-color: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .scan-box {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #cbd5e1;
+      display: none;
+    }
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 10px;
+      max-height: 95px;
+      overflow-y: auto;
+    }
+    .pill {
+      font-size: 10px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Reference Grabber Preview Styles */
+    .ref-summary-card {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .ref-thumbs-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+    .ref-thumb {
+      width: 44px;
+      height: 44px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid #fcd34d;
+      background: #fff;
+    }
+    .ref-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: #fef3c7;
+      color: #92400e;
+      margin-right: 3px;
+    }
+
+    /* Resizable Match List Box */
+    .match-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-top: 8px;
+      margin-bottom: 5px;
+    }
+    .match-list-wrapper {
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #f8fafc;
+      overflow: hidden;
+    }
+    .match-list {
+      height: 150px;
+      overflow-y: auto;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .match-list.is-expanded {
+      height: auto !important;
+      max-height: none !important;
+      overflow-y: visible;
+    }
+    .match-item {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 5px 7px;
+      font-size: 10px;
+    }
+    .match-key { font-weight: 700; color: #0f172a; }
+    .match-val { color: #334155; word-break: break-word; }
+
+    /* Custom Vertical Bottom Drag Handle & Expand Button */
+    .vertical-drag-bar {
+      height: 11px;
+      background: #f1f5f9;
+      border-top: 1px solid #e2e8f0;
+      cursor: ns-resize;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: background-color 0.15s;
+    }
+    .vertical-drag-bar:hover,
+    .vertical-drag-bar.dragging {
+      background: #dbeafe;
+    }
+    .vertical-drag-grip {
+      width: 28px;
+      height: 3px;
+      border-radius: 999px;
+      background: #94a3b8;
+    }
+    .vertical-drag-bar:hover .vertical-drag-grip,
+    .vertical-drag-bar.dragging .vertical-drag-grip {
+      background: #2563eb;
+    }
+    .btn-expand-toggle {
+      padding: 2px 6px;
+      font-size: 9.5px;
+      font-weight: 700;
+      border-radius: 4px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      cursor: pointer;
+      line-height: 1.3;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .btn-expand-toggle:hover {
+      background: #eff6ff;
+      border-color: #93c5fd;
+      color: #1d4ed8;
+    }
+    .btn-expand-toggle.is-active {
+      background: #dbeafe;
+      border-color: #93c5fd;
+      color: #1d4ed8;
+    }
+
+    /* Master Variant Table Editor (Step 2) */
+    .variant-editor-section {
+      margin-top: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #ffffff;
+      overflow: hidden;
+      display: none;
+    }
+    .variant-editor-header {
+      background: #f1f5f9;
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e2e8f0;
+      gap: 4px;
+    }
+    .variant-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .btn-global-tax {
+      padding: 2px 6px;
+      font-size: 9.5px;
+      font-weight: 700;
+      border-radius: 4px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      cursor: pointer;
+      line-height: 1.3;
+      transition: all 0.15s;
+    }
+    .btn-global-tax:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .btn-global-tax.mode-include {
+      background: #fef3c7;
+      color: #b45309;
+      border-color: #fcd34d;
+    }
+    .variant-table-wrap {
+      height: 235px;
+      overflow: auto;
+    }
+    .variant-table-wrap.is-expanded {
+      height: auto !important;
+      max-height: none !important;
+      overflow-y: visible;
+    }
+    .variant-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+    }
+    .variant-table th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+      text-align: left;
+      padding: 6px 5px;
+      border-bottom: 1px solid #e2e8f0;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      line-height: 1.25;
+    }
+    .variant-table th.th-variant-col {
+      max-width: 112px;
+      word-break: break-word;
+    }
+    .variant-table th.th-status {
+      text-align: center;
+      white-space: nowrap;
+    }
+    .status-th-inner {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .btn-off-all {
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+      border-radius: 4px;
+      cursor: pointer;
+      line-height: 1.3;
+      transition: background-color 0.15s;
+    }
+    .btn-off-all:hover {
+      background: #fecaca;
+    }
+    .variant-table td {
+      padding: 6px 5px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: top;
+      transition: background-color 0.15s, opacity 0.15s;
+    }
+    .variant-table tr:last-child td {
+      border-bottom: none;
+    }
+    .variant-table tr.variant-disabled td {
+      background-color: #f8fafc;
+    }
+    .variant-table tr.variant-disabled .var-primary-name,
+    .variant-table tr.variant-disabled .var-sub-name {
+      color: #94a3b8;
+    }
+    .variant-table tr.variant-disabled .var-hint-text {
+      color: #94a3b8;
+      font-weight: 400;
+    }
+    .var-name-cell {
+      font-weight: 600;
+      color: #1e293b;
+      line-height: 1.35;
+      min-width: 72px;
+      max-width: 112px;
+      word-break: break-word;
+      padding-top: 8px !important;
+    }
+    .var-primary-name {
+      display: block;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .var-sub-name {
+      display: block;
+      font-size: 9.5px;
+      font-weight: 500;
+      color: #475569;
+      margin-top: 2px;
+      padding-top: 2px;
+      border-top: 1px dashed #e2e8f0;
+    }
+    .var-hint-text {
+      display: block;
+      font-size: 9px;
+      font-weight: 400;
+      color: #64748b;
+      margin-top: 3px;
+      line-height: 1.25;
+    }
+    .var-hint-text.is-include-mode {
+      color: #b45309;
+      font-weight: 600;
+    }
+    .var-price-error {
+      display: none;
+      font-size: 9px;
+      font-weight: 600;
+      color: #dc2626;
+      margin-top: 2px;
+      line-height: 1.25;
+    }
+    .var-input-stock {
+      width: 42px !important;
+      padding: 4px 4px !important;
+      font-size: 11px !important;
+      text-align: center;
+    }
+    .var-input-stock:disabled {
+      background-color: #e2e8f0 !important;
+      color: #94a3b8 !important;
+      border-color: #cbd5e1 !important;
+      cursor: not-allowed;
+    }
+    .var-price-col {
+      min-width: 112px;
+    }
+    .var-price-box {
+      display: flex;
+      align-items: center;
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+      overflow: hidden;
+      background: #fff;
+      width: 100%;
+    }
+    .var-price-box:focus-within {
+      border-color: #2563eb;
+    }
+    .var-price-box.has-error {
+      border-color: #dc2626;
+      background-color: #fef2f2;
+    }
+    .var-price-box.is-disabled {
+      background-color: #e2e8f0;
+      border-color: #cbd5e1;
+      cursor: not-allowed;
+    }
+    .var-price-prefix {
+      background: #f1f5f9;
+      color: #64748b;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 4px 4px;
+      border-right: 1px solid #e2e8f0;
+      user-select: none;
+    }
+    .var-price-box.is-disabled .var-price-prefix {
+      background-color: #e2e8f0;
+      color: #94a3b8;
+    }
+    .var-input-price {
+      border: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
+      padding: 4px 4px !important;
+      font-size: 11px !important;
+      width: 100% !important;
+      min-width: 56px;
+    }
+    .var-input-price:disabled {
+      color: #94a3b8 !important;
+      cursor: not-allowed;
+    }
+    .btn-tax-switch {
+      margin-right: 3px;
+      padding: 2px 5px;
+      font-size: 8.5px;
+      font-weight: 700;
+      border-radius: 4px;
+      border: 1px solid #cbd5e1;
+      background: #f1f5f9;
+      color: #475569;
+      cursor: pointer;
+      flex-shrink: 0;
+      line-height: 1.2;
+      transition: all 0.15s;
+    }
+    .btn-tax-switch:hover:not(:disabled) {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .btn-tax-switch.mode-include {
+      background: #fef3c7;
+      color: #b45309;
+      border-color: #fcd34d;
+    }
+    .btn-tax-switch:disabled {
+      background: #e2e8f0;
+      color: #94a3b8;
+      border-color: #cbd5e1;
+      cursor: not-allowed;
+    }
+    .var-status-cell {
+      text-align: center;
+      padding-top: 9px !important;
+    }
+    .switch-toggle {
+      position: relative;
+      display: inline-block;
+      width: 30px;
+      height: 16px;
+      flex-shrink: 0;
+      margin: 0;
+    }
+    .switch-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .switch-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1;
+      transition: .2s;
+      border-radius: 16px;
+    }
+    .switch-slider:before {
+      position: absolute;
+      content: "";
+      height: 12px;
+      width: 12px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: .2s;
+      border-radius: 50%;
+    }
+    .switch-toggle input:checked + .switch-slider {
+      background-color: #2563eb;
+    }
+    .switch-toggle input:checked + .switch-slider:before {
+      transform: translateX(14px);
+    }
+
+    /* Area Kontrol Bawah Tabel Varian */
+    .variant-footer-controls {
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .variant-quick-range-row {
+      display: flex;
+      gap: 6px;
+    }
+    .btn-range-fill {
+      flex: 1;
+      padding: 5px 8px;
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 5px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #1e293b;
+      cursor: pointer;
+      transition: background-color 0.15s, border-color 0.15s;
+    }
+    .btn-range-fill:hover {
+      background: #eff6ff;
+      border-color: #93c5fd;
+      color: #1d4ed8;
+    }
+    .variant-bulk-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 6px;
+    }
+    .variant-bulk-title {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 5px;
+    }
+    .variant-bulk-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .bulk-stock-input {
+      width: 54px !important;
+      flex-shrink: 0;
+      padding: 5px 6px !important;
+      font-size: 11px !important;
+      text-align: center;
+    }
+    .bulk-price-input {
+      flex: 1;
+      min-width: 75px;
+      padding: 5px 7px !important;
+      font-size: 11px !important;
+    }
+    .btn-bulk-apply {
+      padding: 5px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      background: #0f172a;
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-bulk-apply:hover {
+      background: #1e293b;
+    }
+	.ext-credits-footer {
+	  margin-top: 24px;
+	  padding: 10px 8px 14px;
+	  border-top: 1px dashed rgba(148, 163, 184, 0.25);
+	  text-align: center;
+	}
+
+	.ext-credits-trigger {
+	  display: inline-flex;
+	  align-items: center;
+	  gap: 5px;
+	  background: transparent;
+	  border: none;
+	  padding: 4px 8px;
+	  border-radius: 6px;
+	  font-size: 11px;
+	  color: rgba(100, 116, 139, 0.55); /* Samar-samar */
+	  cursor: pointer;
+	  transition: color 0.2s ease, background-color 0.2s ease;
+	}
+
+	.ext-credits-trigger:hover,
+	.ext-credits-trigger[aria-expanded="true"] {
+	  color: rgba(71, 85, 105, 0.95);
+	  background-color: rgba(148, 163, 184, 0.1);
+	}
+
+	.ext-info-icon {
+	  font-size: 12px;
+	  line-height: 1;
+	}
+
+	.ext-credits-box {
+	  margin-top: 8px;
+	  padding: 10px 12px;
+	  border-radius: 8px;
+	  background: rgba(248, 250, 252, 0.85);
+	  border: 1px solid rgba(203, 213, 225, 0.6);
+	  text-align: left;
+	  font-size: 11px;
+	  line-height: 1.5;
+	  color: #475569;
+	}
+
+	.ext-credits-row {
+	  margin-bottom: 3px;
+	}
+
+	.ext-credits-note {
+	  margin-top: 6px;
+	  padding-top: 6px;
+	  border-top: 1px solid rgba(203, 213, 225, 0.5);
+	  font-size: 10.5px;
+	  color: #64748b;
+	}	
+  </style>
+</head>
+<body>
+
+  <!-- FITUR 1: KALKULATOR PPN -->
+  <div class="card">
+    <h3>
+      <span>Converter Include PPN > Exclude PPN</span>
+      <span class="badge-hint">12%</span>
+    </h3>
+    <div class="grid-container">
+      <div class="form-group">
+        <label for="includeInput">Include PPN (Rp)</label>
+        <input type="text" id="includeInput" placeholder="1.110.000" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label for="excludeInput">Exclude PPN (Rp)</label>
+        <div class="output-wrapper">
+          <input type="text" id="excludeInput" placeholder="0" disabled>
+          <button id="copyBtn" title="Copy angka tanpa titik/koma">
+            <svg id="copyIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="copyStatus" class="status-text text-success"></div>
+  </div>
+
+  <!-- FITUR 2: INAPROC REFERENCE GRABBER -->
+  <div class="card">
+    <h3>
+      <span>Inaproc Reference Grabber</span>
+      <span class="badge-hint badge-amber">Clone Produk</span>
+    </h3>
+    <p class="desc-text">
+      Buka halaman detail produk referensi di <b>katalog.inaproc.id</b> lalu klik <b>Scan Referensi</b>.
+    </p>
+
+    <button id="scanRefBtn" class="btn-primary btn-amber">
+      <span>1. Scan Referensi Produk</span>
+    </button>
+
+    <!-- Hasil Scan Referensi -->
+    <div id="refResultBox" class="scan-box">
+      <div class="ref-summary-card">
+        <div id="refNameText" style="font-weight: 700; color: #0f172a;"></div>
+        <div>
+          <span id="refTypeBadge" class="ref-tag"></span>
+          <span id="refOriginBadge" class="ref-tag"></span>
+          <span id="refImgCountBadge" class="ref-tag"></span>
+        </div>
+        <div id="refThumbsRow" class="ref-thumbs-row"></div>
+        <div id="refMetaText" style="color: #475569;"></div>
+      </div>
+
+      <button id="scanMatchFormBtn" class="btn-primary btn-blue">
+        <span>2. Scan & Match Kolom Form Add</span>
+      </button>
+
+      <!-- Preview Hasil Matching & Editor Varian Sebelum Confirm -->
+      <div id="matchPreviewBox" style="display: none;">
+        <div class="match-header-row">
+          <div id="matchSummaryText" style="font-size: 11px; font-weight: 700; color: #0f172a;"></div>
+          <button type="button" id="toggleMatchExpandBtn" class="btn-expand-toggle" title="Tampilkan penuh semua hasil penyocokan">
+            Full
+          </button>
+        </div>
+
+        <div class="match-list-wrapper">
+          <div id="matchList" class="match-list"></div>
+          <div id="matchDragHandle" class="vertical-drag-bar" title="Tarik atas-bawah untuk mengubah tinggi hasil penyocokan">
+            <span class="vertical-drag-grip"></span>
+          </div>
+        </div>
+
+        <!-- Tabel Varian Editable (Khusus Master Product dengan > 1 Varian) -->
+        <div id="variantEditorSection" class="variant-editor-section">
+          <div class="variant-editor-header">
+            <span id="variantEditorTitle">Varian Produk</span>
+            <div class="variant-header-actions">
+              <button type="button" id="toggleVariantExpandBtn" class="btn-expand-toggle" title="Tampilkan penuh seluruh baris varian tanpa scroll">
+                Full
+              </button>
+              <button type="button" id="globalTaxSwitchBtn" class="btn-global-tax" title="Switch tampilan semua varian antara Exclude PPN dan Include PPN 12%">
+                All: Exc
+              </button>
+              <span id="variantCountBadge" class="badge-hint">0</span>
+            </div>
+          </div>
+          <div id="variantTableWrap" class="variant-table-wrap">
+            <table class="variant-table">
+              <thead>
+                <tr>
+                  <th id="variantColHeader" class="th-variant-col">Varian</th>
+                  <th>Stok</th>
+                  <th>Harga</th>
+                  <th class="th-status">
+                    <div class="status-th-inner">
+                      <span>Status</span>
+                      <button type="button" id="disableAllStatusBtn" class="btn-off-all" title="Nonaktifkan semua status varian">Off</button>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="variantEditorBody"></tbody>
+            </table>
+          </div>
+          <div id="variantDragHandle" class="vertical-drag-bar" title="Tarik atas-bawah untuk mengubah tinggi tabel varian">
+            <span class="vertical-drag-grip"></span>
+          </div>
+
+          <!-- Tombol Auto Isi Batas Harga & Pengatur Sekaligus -->
+          <div class="variant-footer-controls">
+            <div class="variant-quick-range-row">
+              <button type="button" id="fillMinPriceAllBtn" class="btn-range-fill" title="Isi semua varian dengan batas harga terendah">
+                Isi Harga Terendah
+              </button>
+              <button type="button" id="fillMaxPriceAllBtn" class="btn-range-fill" title="Isi semua varian dengan batas harga tertinggi">
+                Isi Harga Tertinggi
+              </button>
+            </div>
+
+            <div class="variant-bulk-box">
+              <div class="variant-bulk-title">Pengatur Sekaligus (Semua Varian)</div>
+              <div class="variant-bulk-row">
+                <input type="text" id="bulkStockInput" class="bulk-stock-input" inputmode="numeric" placeholder="Stok" autocomplete="off">
+                <input type="text" id="bulkPriceInput" class="bulk-price-input" inputmode="numeric" placeholder="Harga (Rp)" autocomplete="off">
+                <button type="button" id="applyBulkVariantBtn" class="btn-bulk-apply">Terapkan Ke Semua</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <label style="margin-top: 8px; cursor: pointer; justify-content: flex-start; gap: 6px;">
+          <input type="checkbox" id="autoUploadImgCheck" checked>
+          <span id="uploadImgLabel">Auto-upload semua foto referensi ke form</span>
+        </label>
+
+        <button id="confirmRefFillBtn" class="btn-primary btn-green">
+          <span>3. Confirm & Isi Semua ke Form</span>
+        </button>
+      </div>
+
+      <button id="clearRefBtn" class="btn-clear" style="display: flex;">
+        <span>Clear Data Referensi</span>
+      </button>
+    </div>
+
+    <div id="refStatus" class="alert-box"></div>
+  </div>
+
+  <!-- FITUR 3: AUTO TOGGLE VARIAN -->
+  <div class="card">
+    <h3>
+      <span>Auto Toggle OFF All Varian (Master Product)</span>
+    </h3>
+    <button id="toggleVarianBtn" class="btn-primary">
+      <span>Varian 1 ON, Lainnya OFF</span>
+    </button>
+    <div id="varianStatus" class="alert-box"></div>
+  </div>
+
+  <!-- FITUR 4: AI AUTO-FILL PRODUK -->
+  <div class="card">
+    <h3>
+      <span>AI Auto-Fill Spesifikasi (Experiment)</span>
+      <div>
+        <span id="activeProviderBadge" class="provider-pill">Gemini</span>
+        <span id="toggleSettingsLink" class="link-toggle">Pengaturan AI</span>
+      </div>
+    </h3>
+
+    <div id="aiSettingsSection" class="settings-panel">
+      <div class="form-group">
+        <label for="providerSelect">Provider AI</label>
+        <select id="providerSelect">
+          <option value="gemini">Google Gemini</option>
+          <option value="9router">9Router (OpenAI Compatible)</option>
+        </select>
+      </div>
+
+      <div id="geminiConfigBox">
+        <div class="form-group">
+          <label for="geminiApiKey">Gemini API Key (Tersimpan Lokal)</label>
+          <input type="password" id="geminiApiKey" placeholder="AIzaSy..." autocomplete="off">
+        </div>
+        <button id="saveGeminiBtn" class="btn-sm" style="width: 100%;">Simpan Pengaturan Gemini</button>
+      </div>
+
+      <div id="routerConfigBox" style="display: none;">
+        <div class="form-group">
+          <label for="routerBaseUrl">API Base URL</label>
+          <input type="text" id="routerBaseUrl" value="http://localhost:20128/v1" placeholder="http://localhost:20128/v1" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label for="routerApiKey">API Key 9Router</label>
+          <input type="password" id="routerApiKey" placeholder="Masukkan API Key dari dashboard 9Router" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label for="routerModelSelect">
+            <span>Pilihan Model (Otomatis dari /models)</span>
+          </label>
+          <div class="output-wrapper">
+            <select id="routerModelSelect">
+              <option value="">-- Klik Refresh Model --</option>
+            </select>
+            <button id="refreshModelsBtn" class="btn-sm btn-sm-blue">Refresh</button>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button id="testRouterBtn" class="btn-sm btn-sm-blue">Test Connection</button>
+          <button id="saveRouterBtn" class="btn-sm">Simpan Pengaturan</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="desc-text">
+      1. Pilih kategori di INAPROC sampai kolom spesifikasi muncul, lalu klik <b>Scan Form</b>.
+    </p>
+
+    <button id="scanFormBtn" class="btn-primary btn-purple">
+      <span>1. Scan Kolom Target Form</span>
+    </button>
+
+    <div id="scanBox" class="scan-box">
+      <div id="scanSummary" style="font-size: 11px; font-weight: 700; margin-bottom: 6px; color: #0f172a;"></div>
+      <div id="pillList" class="pill-list"></div>
+
+      <div class="form-group">
+        <label for="productQueryInput">2. Masukkan Nama / Tipe Barang Lengkap</label>
+        <input type="text" id="productQueryInput" placeholder="Contoh: Samsung Galaxy Tab S9 FE 6/128GB WiFi">
+      </div>
+
+      <button id="generateFillBtn" class="btn-primary btn-green">
+        <span>2. Generate AI & Isi Otomatis</span>
+      </button>
+
+      <button id="clearAiBtn" class="btn-clear">
+        <span>Clear (Kembali ke Langkah 1)</span>
+      </button>
+    </div>
+
+    <div id="aiStatus" class="alert-box"></div>
+  </div>
+  
+  <!-- Footer Credits (Samar-samar) -->
+<footer class="ext-credits-footer">
+  <button type="button" id="btnToggleCredits" class="ext-credits-trigger" title="Info & Lisensi Ekstensi">
+    <span class="ext-info-icon" aria-hidden="true">ⓘ</span>
+    <span>INAPROC Helper • 100% Free</span>
+  </button>
+
+  <div id="extCreditsBox" class="ext-credits-box" hidden>
+    <div class="ext-credits-row">
+      <strong>Lisensi:</strong> 100% Gratis (Free to Use &amp; Share)
+    </div>
+  </div>
+</footer>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>
